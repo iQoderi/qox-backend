@@ -32,6 +32,10 @@ module.exports = function (appInfo){
       csrf: {
         enable: false
       }
+    },
+    url: {
+      cdnPrefix: 'http://odljp7x9v.bkt.clouddn.com/code/npm',
+      cdnSuffix: 'index.cmd.js'
     }
   };
   
