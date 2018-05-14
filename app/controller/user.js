@@ -4,7 +4,14 @@ const Controller = require('egg').Controller;
 
 class UserController extends Controller {
   info() {
-    this.ctx.body = 'get user info';
+    const { ctx } = this;
+
+    ctx.body = {
+      code: 0,
+      data: {
+          user: ctx.state.user,
+      }
+    };
   }
 };
 

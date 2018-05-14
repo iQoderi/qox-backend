@@ -8,7 +8,7 @@ module.exports = (app, flag = 0) => {
         async (ctx, next) => {
             const { _id, exp } = ctx.state.user;
             const accessToken = ctx.request.headers.access_token || ctx.request.query.access_token;
-            const now =Date.now();
+            const now = Date.now();
 
             if (!_id || now >= exp * 1000) {
                return ctx.body = {
@@ -16,7 +16,7 @@ module.exports = (app, flag = 0) => {
                 };
             }
 
-            const user =await ctx.service.user.findUserById(_id);
+            const user = await ctx.service.user.findUserById(_id);
 
             if (!user) {
                 return ctx.body = {
