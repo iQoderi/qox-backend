@@ -14,10 +14,19 @@ class PageService extends Service {
     return insertSuccess;
   };
 
+  async getNextAId() {
+    const sql = 'SELECT auto_increment FROM information_schema.`TABLES` WHERE TABLE_SCHEMA="qox-database" AND TABLE_NAME="page"';
+    const result = await this.app.mysql.query(sql);
+    
+    return result;
+  }
+
   async createPageBundle(components) {
     const len = components.length;
     const { qiniu: qiniuConf, url: { cdn, cdnPrefix, cdnSuffix } } = this.ctx.app.config;
     let pageBundle = '// {"framework" : "Rax"}\n';
+
+    await this.getNextAId();
 
     for (let i = 0; i < len; i++) {
       const { name, version } = components[i];
