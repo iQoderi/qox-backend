@@ -14,7 +14,9 @@
     "fs": "^0.0.1-security",
     "isomorphic-fetch": "^2.2.1",
     "koa-compose": "^4.0.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "qiniu-sdk": "^0.0.2",
+    "request": "^2.85.0"
   },
   "devDependencies": {
     "autod": "^3.0.1",

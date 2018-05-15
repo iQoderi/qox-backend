@@ -1,6 +1,6 @@
 "use strict";
 
-const fetch = require('isomorphic-fetch');
+const request = require('request');
 
 module.exports = {
     url() {
@@ -44,10 +44,14 @@ module.exports = {
         });
     },
     fetchFile(path) {
-        return fetch(path).then((res) => {
-            return res.body;
-        }).then((body) => {
-            return body._outBuffer.toString();
+        return new Promise((resolve, reject) => {
+            request(path, (error, response, body) => {
+                if (!error && response.statusCode === 200) {
+                    resolve(response.body);
+                } else {
+                    reject(error);
+                }
+            });
         });
     },
     comboBundle(bundleContent) {
