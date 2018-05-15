@@ -7,7 +7,12 @@ class ComponentController extends Controller {
     const { ctx } = this;
     const { body } = ctx.request;
 
-    const isSuccess = await ctx.service.component.create(body);
+    const row = Object.assign({}, body, {
+      createAt: Date.now(),
+      createBy: 'Qoder'
+    });
+
+    const isSuccess = await ctx.service.component.create(row);
 
     if (isSuccess) {
       ctx.body = {
