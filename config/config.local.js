@@ -46,7 +46,13 @@ module.exports = function (appInfo){
         ak: '6dq3o_p6-n0nh3-StBsjiS7b0SP6us7aJrTrtMZV',
         sk: 'F0xhJzVnCJSePA41IMDG7t8bmggSA6AlVdvosOfJ'
       }
-    }
+    },
+    view: {
+      defaultViewEngine: 'nunjucks',
+      mapping: {
+        '.html': 'nunjucks'
+      },
+    },
   };
   
   return config;

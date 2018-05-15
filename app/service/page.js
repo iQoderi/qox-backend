@@ -80,6 +80,13 @@ class PageService extends Service {
     return result;
   };
   
+  async getPageInfo(pageId) {
+    const result = await this.app.mysql.get('page', {
+      id: pageId
+    });
+
+    return result;
+  }
 };
 
 module.exports = PageService;

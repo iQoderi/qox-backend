@@ -34,13 +34,12 @@ class PageController extends Controller {
   async destroy () {
     const { ctx } = this;
     const { query } = ctx.request;
-    console.log(query);
     const result = await this.ctx.service.page.destroy(query.pageId);
 
     ctx.body = {
       code: 0
     };
-  }
+  };
 };
 
 module.exports = PageController;
