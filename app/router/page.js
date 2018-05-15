@@ -2,5 +2,5 @@
 
 module.exports = app => {
   app.post('/page/create', 'page.create');
-  app.get('/page/test', 'page.test');
+  app.delete('/page/destroy', 'page.destroy');
 };

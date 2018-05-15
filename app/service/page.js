@@ -71,6 +71,15 @@ class PageService extends Service {
       });
     });
   };
+
+  async destroy(pageId) {
+    const result = this.app.mysql.delete('page', {
+      id: pageId
+    });
+
+    return result;
+  };
+  
 };
 
 module.exports = PageService;

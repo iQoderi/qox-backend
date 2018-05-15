@@ -30,12 +30,14 @@ class PageController extends Controller {
       };
     }
   };
-  
-  async test(ctx) {
-    const { body } = ctx.request;
-    const bundleUrl = ctx.service.page.createPageBundle(body.components);
 
-    return ctx.body = {
+  async destroy () {
+    const { ctx } = this;
+    const { query } = ctx.request;
+    console.log(query);
+    const result = await this.ctx.service.page.destroy(query.pageId);
+
+    ctx.body = {
       code: 0
     };
   }
