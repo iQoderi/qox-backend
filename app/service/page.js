@@ -17,7 +17,7 @@ class PageService extends Service {
   async getNextAId() {
     const sql = 'SELECT auto_increment FROM information_schema.`TABLES` WHERE TABLE_SCHEMA="qox-database" AND TABLE_NAME="page"';
     const result = await this.app.mysql.query(sql);
-    
+
     return result;
   }
 
@@ -40,16 +40,18 @@ class PageService extends Service {
     const writeFile = `${writeDir}/index.bundle.min.js`;
 
     return new Promise((resolve, reject) => {
-      fs.writeFile(writeFile, pageBundle, { encoding:'utf-8' }, (err) => {
+      fs.writeFile(writeFile, pageBundle, { encoding:'utf-8' }, async (err) => {
         if (err) {
           return reject(err);
         }
 
+        const result = await this.getNextAId();
+        const nextId = result[0].auto_increment;
         const qn = new Qiniu(qiniuConf.key);
         const uploadConf = {
           bucket: qiniuConf.uploadConf.bucket,
           filePrefix: 'page',
-          key: `test/index.bundle.js`,
+          key: `${nextId}/index.bundle.js`,
           localFile: writeFile
         };
 
@@ -60,7 +62,8 @@ class PageService extends Service {
           // 异步删除暂存 bundle
           setTimeout(() => {
             rimraf(writeFile , () => {});
-          }, 0);  
+          }, 0);
+          
           resolve(pageBundleUrl);       
         }).catch((err) => {
           reject(err);

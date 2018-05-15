@@ -8,14 +8,17 @@ class PageController extends Controller {
     const { body } = ctx.request;
 
     
-    const bundleUrl = ctx.service.page.createPageBundle(body.components);
+    const bundleUrl = await ctx.service.page.createPageBundle(body.components);
 
     body.components = JSON.stringify(body.components);
         
-    const isSuccess = await ctx.service.page.create(body);
+    const row = Object.assign({}, body, {
+      createAt: Date.now(),
+      createBy: 'Qoder',
+      bundleUrl
+    });
 
-    // http://odljp7x9v.bkt.clouddn.com/code/npm/qox-component-test/0.0.3/index.cmd.js
-    const { cdnPrefix, cdnSuffix } = ctx.app.config.url;
+    const isSuccess = await ctx.service.page.create(row);    
 
     if (isSuccess) {
       ctx.body = {
