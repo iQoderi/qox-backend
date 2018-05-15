@@ -3,8 +3,8 @@
 const Service = require('egg').Service;
 const path = require('path');
 const fs = require('fs');
+const rimraf = require('rimraf');
 const Qiniu = require('qiniu-sdk');
-const fetch = require('isomorphic-fetch');
 
 class PageService extends Service {
   async create(page) {
@@ -16,7 +16,7 @@ class PageService extends Service {
 
   async createPageBundle(components) {
     const len = components.length;
-    const { cdnPrefix, cdnSuffix } = this.ctx.app.config.url;
+    const { qiniu: qiniuConf, url: { cdn, cdnPrefix, cdnSuffix } } = this.ctx.app.config;
     let pageBundle = '// {"framework" : "Rax"}\n';
 
     for (let i = 0; i < len; i++) {
@@ -32,9 +32,30 @@ class PageService extends Service {
 
     return new Promise((resolve, reject) => {
       fs.writeFile(writeFile, pageBundle, { encoding:'utf-8' }, (err) => {
-        if (error) {
-          return reject(error);
+        if (err) {
+          return reject(err);
         }
+
+        const qn = new Qiniu(qiniuConf.key);
+        const uploadConf = {
+          bucket: qiniuConf.uploadConf.bucket,
+          filePrefix: 'page',
+          key: `test/index.bundle.js`,
+          localFile: writeFile
+        };
+
+        qn.putFile(uploadConf).then((resp) => {
+          const { key } = resp;
+          const pageBundleUrl = `${cdn}/${key}`;
+
+          // 异步删除暂存 bundle
+          setTimeout(() => {
+            rimraf(writeFile , () => {});
+          }, 0);  
+          resolve(pageBundleUrl);       
+        }).catch((err) => {
+          reject(err);
+        });
       });
     });
   };

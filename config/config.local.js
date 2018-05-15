@@ -34,8 +34,18 @@ module.exports = function (appInfo){
       }
     },
     url: {
+      cdn: 'http://odljp7x9v.bkt.clouddn.com',
       cdnPrefix: 'http://odljp7x9v.bkt.clouddn.com/code/npm',
-      cdnSuffix: 'index.cmd.js'
+      cdnSuffix: 'index.cmd.js',
+    },
+    qiniu: {
+      uploadConf: {
+        bucket: 'neuqst'
+      },
+      key: {
+        ak: '6dq3o_p6-n0nh3-StBsjiS7b0SP6us7aJrTrtMZV',
+        sk: 'F0xhJzVnCJSePA41IMDG7t8bmggSA6AlVdvosOfJ'
+      }
     }
   };
   
