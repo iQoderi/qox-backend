@@ -22,6 +22,10 @@ const plugins = {
         package: 'egg-view-nunjucks',
     },
     static: true,
+    cors: {
+        enable: true,
+        package: 'egg-cors'
+    }
 };
 
 module.exports = plugins;

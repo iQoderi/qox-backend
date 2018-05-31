@@ -31,12 +31,20 @@ module.exports = function (appInfo){
     security: {
       csrf: {
         enable: false
-      }
+      },
+      domainWhiteList: ['http://localhost:8000', 'http://127.0.0.1:8000', 'http://192.168.1.109:8081'],
+    },
+    cors: {
+      // origin: '*',
+      allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH',
+      credentials: true
     },
     url: {
       cdn: 'http://odljp7x9v.bkt.clouddn.com',
       cdnPrefix: 'http://odljp7x9v.bkt.clouddn.com/code/npm',
       cdnSuffix: 'index.cmd.js',
+      gAliCdnPrefix: 'https://g.alicdn.com/code/npm/',
+      gAliCdnSuffix: 'index.cmd.js'
     },
     qiniu: {
       uploadConf: {
@@ -53,6 +61,18 @@ module.exports = function (appInfo){
         '.html': 'nunjucks'
       },
     },
+    pageConf: {
+      builtInlist: [
+        {
+          rax: '0.6.3'
+        }
+      ],
+      PI: [
+        {
+          'qox-pi': '0.0.1'
+        }
+      ]
+    }
   };
   
   return config;

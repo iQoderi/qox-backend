@@ -11,7 +11,7 @@ class PageService extends Service {
     const result = await this.app.mysql.insert('page', page);
     const insertSuccess = result.affectedRows === 1;
 
-    return insertSuccess;
+    return result.insertId;
   };
 
   async getNextAId() {
@@ -23,10 +23,18 @@ class PageService extends Service {
 
   async createPageBundle(components) {
     const len = components.length;
-    const { qiniu: qiniuConf, url: { cdn, cdnPrefix, cdnSuffix } } = this.ctx.app.config;
+    const { qiniu: qiniuConf, url: { cdn, cdnPrefix, cdnSuffix, gAliCdnPrefix, gAliCdnSuffix }, pageConf: { builtInlist, PI } } = this.ctx.app.config;
     let pageBundle = '// {"framework" : "Rax"}\n';
 
     await this.getNextAId();
+
+    for (let i = 0; i < len; i++) {
+      const { name, version } = bui [i];
+      const componentBundleUrl = `${cdnPrefix}/${name}/${version}/${cdnSuffix}`;
+      const componentBundle = await this.ctx.helper.fetchFile(componentBundleUrl);
+      
+      pageBundle += componentBundle;
+    }
 
     for (let i = 0; i < len; i++) {
       const { name, version } = components[i];
