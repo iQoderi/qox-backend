@@ -1,5 +1,5 @@
 'use strict';
 
 module.exports = app => {
-  app.get('/qox/:id/index.html', 'qoxCore.index');
+  app.get('/qox/index.html', 'qoxCore.index');
 };

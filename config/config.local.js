@@ -32,6 +32,9 @@ module.exports = function (appInfo){
       csrf: {
         enable: false
       },
+      xframe: {
+        enable: false
+      },
       domainWhiteList: ['http://localhost:8000', 'http://127.0.0.1:8000', 'http://192.168.1.109:8081'],
     },
     cors: {

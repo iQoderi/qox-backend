@@ -28,26 +28,32 @@ class PageController extends Controller {
     }
   }
 
-  async create() {
+  async build() {
     const { ctx } = this;
-    const { body } = ctx.request;
+    const { body, query } = ctx.request;
 
     
-    const bundleUrl = await ctx.service.page.createPageBundle(body.components);
+    const bundleUrl = await ctx.service.page.createPageBundle(query.pageId, body.components);
 
     body.components = JSON.stringify(body.components);
         
     const row = Object.assign({}, body, {
       createAt: Date.now(),
       createBy: 'Qoder',
-      bundleUrl
+      bundleUrl,
+      id: query.pageId
     });
 
-    const isSuccess = await ctx.service.page.create(row);    
+    console.log(row);
+    
+    const isSuccess = await ctx.service.page.update(row);    
 
     if (isSuccess) {
       ctx.body = {
           code: 0,
+          data: {
+            bundleUrl
+          }
       };
     } else {
       ctx.body = {
@@ -86,13 +92,17 @@ class PageController extends Controller {
 
     const result = await this.ctx.service.page.getPageInfo(query.pageId);
 
-    let modules = JSON.parse(result.components).map((module) => {
-      return {
-        moduleId: module.id,
-        moduleName: module.name,
-        moduleVersion: module.verion
-      };
-    });
+    let modules  = [];
+    if (result.components) {
+      modules = JSON.parse(result.components).map((module) => {
+        console.log(module);
+        return {
+          moduleId: module.id,
+          moduleName: module.name,
+          moduleVersion: module.version
+        };
+      });
+    }
 
     ctx.body = {
       code: 0,
@@ -118,7 +128,8 @@ class PageController extends Controller {
 
     const option = {
       offset,
-      limit
+      limit,
+      orders: [['id', 'desc']]
     };
 
 

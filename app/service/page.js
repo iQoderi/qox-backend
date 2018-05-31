@@ -14,6 +14,12 @@ class PageService extends Service {
     return result.insertId;
   };
 
+  async update(page) {
+    const result = await this.app.mysql.update('page', page);
+
+    return result;
+  }
+
   async getNextAId() {
     const sql = 'SELECT auto_increment FROM information_schema.`TABLES` WHERE TABLE_SCHEMA="qox-database" AND TABLE_NAME="page"';
     const result = await this.app.mysql.query(sql);
@@ -21,25 +27,22 @@ class PageService extends Service {
     return result;
   }
 
-  async createPageBundle(components) {
+  async createPageBundle(pageId, components) {
     const len = components.length;
     const { qiniu: qiniuConf, url: { cdn, cdnPrefix, cdnSuffix, gAliCdnPrefix, gAliCdnSuffix }, pageConf: { builtInlist, PI } } = this.ctx.app.config;
     let pageBundle = '// {"framework" : "Rax"}\n';
 
-    await this.getNextAId();
-
-    for (let i = 0; i < len; i++) {
-      const { name, version } = bui [i];
-      const componentBundleUrl = `${cdnPrefix}/${name}/${version}/${cdnSuffix}`;
-      const componentBundle = await this.ctx.helper.fetchFile(componentBundleUrl);
-      
-      pageBundle += componentBundle;
-    }
-
     for (let i = 0; i < len; i++) {
       const { name, version } = components[i];
       const componentBundleUrl = `${cdnPrefix}/${name}/${version}/${cdnSuffix}`;
-      const componentBundle = await this.ctx.helper.fetchFile(componentBundleUrl);
+      let componentBundle = '';
+
+      try {
+        console.log(componentBundleUrl);
+       componentBundle = await this.ctx.helper.fetchFile(componentBundleUrl);        
+      }catch(e) {
+        console.log('error',e);
+      }
       
       pageBundle += componentBundle;
     }
@@ -53,17 +56,14 @@ class PageService extends Service {
           return reject(err);
         }
 
-        const result = await this.getNextAId();
-        const nextId = result[0].auto_increment;
         const qn = new Qiniu(qiniuConf.key);
         const uploadConf = {
           bucket: qiniuConf.uploadConf.bucket,
-          filePrefix: 'page',
-          key: `${nextId}/index.bundle.js`,
+          key: `page/${pageId}/index.bundle.js`,
           localFile: writeFile
         };
 
-        qn.putFile(uploadConf).then((resp) => {
+        qn.forcePutFile(uploadConf).then((resp) => {
           const { key } = resp;
           const pageBundleUrl = `${cdn}/${key}`;
 
@@ -74,6 +74,7 @@ class PageService extends Service {
           
           resolve(pageBundleUrl);       
         }).catch((err) => {
+          console.log(err);
           reject(err);
         });
       });
@@ -105,8 +106,6 @@ class PageService extends Service {
   async count() {
     const sql = 'SELECT COUNT(*) FROM page';
     const result = await this.app.mysql.query(sql);
-
-    console.log(result);
 
     return result[0]['COUNT(*)'];
   };
