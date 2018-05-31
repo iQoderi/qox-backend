@@ -104,7 +104,40 @@ class PageController extends Controller {
 
   async list() {
     const { ctx } = this;
-    
+    const { query } = ctx.request;
+    let { limit = 10, page = 0 } = query;
+
+    if (page <= 0) {
+      page = 0;
+    }
+
+    page = parseInt(page);
+    limit = parseInt(limit);
+
+    const offset = page * limit;
+
+    const option = {
+      offset,
+      limit
+    };
+
+
+    const list = await ctx.service.page.list(option);
+    const total = await ctx.service.page.count();
+
+    const _page = {
+      current: page,
+      limit,
+      total
+    };
+
+    ctx.body = {
+      code: 0,
+      data: {
+        list,
+        page: _page
+      }
+    };
   }
 };
 

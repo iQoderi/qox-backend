@@ -94,7 +94,22 @@ class PageService extends Service {
     });
 
     return result;
-  }
+  };
+
+  async list(option) {
+    const result = await this.app.mysql.select('page', option);
+
+    return result;
+  };
+  
+  async count() {
+    const sql = 'SELECT COUNT(*) FROM page';
+    const result = await this.app.mysql.query(sql);
+
+    console.log(result);
+
+    return result[0]['COUNT(*)'];
+  };
 };
 
 module.exports = PageService;
