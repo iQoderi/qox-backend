@@ -65,16 +65,12 @@ module.exports = function (appInfo){
       },
     },
     pageConf: {
-      builtInlist: [
-        {
-          rax: '0.6.3'
-        }
-      ],
-      PI: [
-        {
-          'qox-pi': '0.0.1'
-        }
-      ]
+      builtInlist: ['rax'],
+      PI: ['qox-pi'],
+      interventionMap: {
+        'rax': '0.6.3',
+        'qox-pi': '0.0.1'
+      }
     }
   };
   

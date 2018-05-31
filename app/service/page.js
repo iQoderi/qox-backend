@@ -29,8 +29,25 @@ class PageService extends Service {
 
   async createPageBundle(pageId, components) {
     const len = components.length;
-    const { qiniu: qiniuConf, url: { cdn, cdnPrefix, cdnSuffix, gAliCdnPrefix, gAliCdnSuffix }, pageConf: { builtInlist, PI } } = this.ctx.app.config;
+    const { qiniu: qiniuConf, url: { cdn, cdnPrefix, cdnSuffix, gAliCdnPrefix, gAliCdnSuffix }, pageConf: { builtInlist, PI, interventionMap } } = this.ctx.app.config;
     let pageBundle = '// {"framework" : "Rax"}\n';
+    const builtInListLen = builtInlist.length;
+    // const keys = Object.keys(builtInlist);
+
+    for (let i = 0; i < builtInListLen; i++) {
+      const name = builtInlist[i];
+      const version = interventionMap[name];
+      const componentBundleUrl = `${gAliCdnPrefix}/${name}/${version}/${gAliCdnSuffix}`;
+      let componentBundle = '';
+
+      try {
+       componentBundle = await this.ctx.helper.fetchFile(componentBundleUrl);        
+      }catch(e) {
+        console.log('error2', e);
+      }
+      
+      pageBundle += componentBundle;
+    };
 
     for (let i = 0; i < len; i++) {
       const { name, version } = components[i];
@@ -38,7 +55,6 @@ class PageService extends Service {
       let componentBundle = '';
 
       try {
-        console.log(componentBundleUrl);
        componentBundle = await this.ctx.helper.fetchFile(componentBundleUrl);        
       }catch(e) {
         console.log('error',e);
@@ -46,6 +62,25 @@ class PageService extends Service {
       
       pageBundle += componentBundle;
     }
+
+    
+    const PIName = PI[0];
+    const PIVersion = interventionMap[PIName];
+
+    const componentBundleUrl = `${cdnPrefix}/${PIName}/${PIVersion}/${cdnSuffix}`;
+    let componentBundle = '';
+
+    try {
+     componentBundle = await this.ctx.helper.fetchFile(componentBundleUrl);        
+    }catch(e) {
+      console.log('error',e);
+    }
+    
+    pageBundle += componentBundle;
+
+    const bundleSuffix = `require("${PIName}")`;
+
+    pageBundle += bundleSuffix;
 
     const writeDir = path.join(__dirname, '../../bundleTmp');
     const writeFile = `${writeDir}/index.bundle.min.js`;

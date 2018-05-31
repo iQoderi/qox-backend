@@ -6,5 +6,6 @@ module.exports = app => {
   app.delete('/page/destroy', 'page.destroy');
   app.get('/page/info', 'page.info');
   app.get('/page/modules', 'page.modules');
+  app.get('/page/components', 'page.components');  
   app.get('/page/list', 'page.list');  
 };

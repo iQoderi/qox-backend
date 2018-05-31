@@ -95,13 +95,46 @@ class PageController extends Controller {
     let modules  = [];
     if (result.components) {
       modules = JSON.parse(result.components).map((module) => {
-        console.log(module);
         return {
           moduleId: module.id,
           moduleName: module.name,
           moduleVersion: module.version
         };
       });
+    }
+
+    ctx.body = {
+      code: 0,
+      data: {
+        modules
+      }
+    };
+  }
+
+  async components() {
+    const { ctx } = this;
+    const { query } = ctx.request;
+
+    const result = await this.ctx.service.page.getPageInfo(query.pageId);
+
+    let modules  = [];
+    if (result.components) {
+      // modules = JSON.parse(result.components).map((module) => {
+      //   return {
+      //     moduleId: module.id,
+      //     moduleName: module.name,
+      //     moduleVersion: module.version
+      //   };
+      // });
+      const components = JSON.parse(result.components);
+      const len = components.length;
+
+      for (let i = 0; i < len; i++) {
+        const item = components[i];
+        const componet = await ctx.service.component.detail(item.id);
+
+        modules.push(componet);
+      }
     }
 
     ctx.body = {
